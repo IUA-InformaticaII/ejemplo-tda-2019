@@ -1,23 +1,25 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+#include "Auto.h"
+
 using namespace sf;
 
 int main(int argc, char *argv[]) {
     RenderWindow w(VideoMode(640, 480), "Ejemplo de SFML");
     Texture tAuto, tBala;
-    Sprite sAuto, sBala;
+    Sprite sBala;
 
-    int xAuto = 100;
-    int yAuto = 130;
+    // Cargo textura del auto y lo asigno al jugador.
+    tAuto.loadFromFile("auto.png");
+    Auto player(&tAuto, 640 / 2, 480 / 2);
+
     int xBala = 100;
     int yBala = 130;
     bool dibujarBala = false;
 
     w.setFramerateLimit(30);
 
-    tAuto.loadFromFile("auto.png");
-    sAuto.setTexture(tAuto);
     tBala.loadFromFile("bala.png");
     sBala.setTexture(tBala);
     sBala.setPosition(50, 50);
@@ -30,38 +32,34 @@ int main(int argc, char *argv[]) {
         }
 
         if (Keyboard::isKeyPressed(Keyboard::Left)) {
-            std::cout << "Izq" << std::endl;
-            xAuto += -5;
+            player.girar('i');
         }
         if (Keyboard::isKeyPressed(Keyboard::Right)) {
-            std::cout << "Der" << std::endl;
-            xAuto += 5;
+            player.girar('d');
         }
         if (Keyboard::isKeyPressed(Keyboard::Up)) {
-            std::cout << "Up" << std::endl;
-            yAuto += -5;
+            player.acelerar();
         }
         if (Keyboard::isKeyPressed(Keyboard::Down)) {
-            std::cout << "Down" << std::endl;
-            yAuto += +5;
+            player.frenar();
         }
+
         if (Keyboard::isKeyPressed(Keyboard::Space)) {
-            if(!dibujarBala){
+            if (!dibujarBala) {
                 dibujarBala = true;
-                yBala = yAuto - 16;
-                xBala = xAuto +53/2-7/2;
+                yBala = player.getY() - 16;
+                xBala = player.getMedioX() - 7 / 2;
             }
 
         }
-        sAuto.setPosition(xAuto, yAuto);
         w.clear(Color(255, 255, 255, 255));
-        w.draw(sAuto);
+        player.dibujar(&w);
 
         if (dibujarBala) {
             sBala.setPosition(xBala, yBala);
             yBala = yBala - 10;
             w.draw(sBala);
-            if(yBala < 0)
+            if (yBala < 0)
                 dibujarBala = false;
         }
 
